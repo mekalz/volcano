@@ -10,12 +10,12 @@ import java.util.Properties;
 /**
  * Created by mekal on 08/01/2017.
  */
-public class NginxSource extends Source {
+public class RandomSource extends Source {
 
     private String template;
     private HashMap<String, Object> mapping = new HashMap<>();
 
-    public NginxSource(String name, Config conf) {
+    public RandomSource(String name, Config conf) {
         super(name, conf);
 
         this.template = conf.getString("template");
@@ -33,7 +33,7 @@ public class NginxSource extends Source {
         }
     }
 
-    public NginxSource(Properties prop) {
+    public RandomSource(Properties prop) {
         super(prop);
     }
 

@@ -7,7 +7,7 @@ import top.mekal.volcano.sender.ISender;
 import top.mekal.volcano.sender.impl.ConsoleSender;
 import top.mekal.volcano.sender.impl.KafkaSender;
 import top.mekal.volcano.source.Source;
-import top.mekal.volcano.source.impl.NginxSource;
+import top.mekal.volcano.source.impl.RandomSource;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -64,7 +64,7 @@ public class Runner {
         }
 
 
-        final Source source = new NginxSource("nginx.hawkeye", genConf);
+        final Source source = new RandomSource("random.source", genConf);
         final ActorSystem actorSystem = ActorSystem.create("volcano");
 
         final Integer genNums = (int)(Math.ceil(rate.doubleValue() / 1000));
