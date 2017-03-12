@@ -4,6 +4,7 @@ import akka.actor.ActorSystem;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import top.mekal.volcano.sender.ISender;
+import top.mekal.volcano.sender.impl.ConsoleSender;
 import top.mekal.volcano.sender.impl.KafkaSender;
 import top.mekal.volcano.source.Source;
 import top.mekal.volcano.source.impl.NginxSource;
@@ -37,21 +38,32 @@ public class Runner {
         String mapping = genConf.getString("mapping");
         Long duration = genConf.getLong("duration") * 1000;
         Long rate = genConf.getLong("rate");
-        String kafkaTopic = genConf.getString("kafkaTopic");
-        String kafkaBrokers = genConf.getString("kafkaBrokers");
-        String kafkaClientId = genConf.getString("kafkaClientId");
 
-        System.out.printf("Template: %s\n", tpl);
-        System.out.printf("Mapping: %s\n", mapping);
-        System.out.printf("Duration: %s\n", duration);
-        System.out.printf("Rate: %s\n", rate);
-        System.out.printf("Kafka topic: %s\n", kafkaTopic);
-        System.out.printf("Kafka client.id: %s\n", kafkaClientId);
-        System.out.printf("Kafka brokers: %s\n", kafkaBrokers);
+        String sinkType = genConf.getString("sink");
+        final ISender sender;
+
+        switch (sinkType) {
+            case "kafka":
+                String kafkaTopic = genConf.getString("kafkaTopic");
+                String kafkaBrokers = genConf.getString("kafkaBrokers");
+                String kafkaClientId = genConf.getString("kafkaClientId");
+
+                System.out.printf("Template: %s\n", tpl);
+                System.out.printf("Mapping: %s\n", mapping);
+                System.out.printf("Duration: %s\n", duration);
+                System.out.printf("Rate: %s\n", rate);
+                System.out.printf("Kafka topic: %s\n", kafkaTopic);
+                System.out.printf("Kafka client.id: %s\n", kafkaClientId);
+                System.out.printf("Kafka brokers: %s\n", kafkaBrokers);
+                sender = new KafkaSender(kafkaTopic, kafkaBrokers, kafkaClientId);
+                break;
+            default:
+                System.out.println("Sink type is unknown or not defined. \nSend data to console by default.");
+                sender = new ConsoleSender();
+
+        }
 
 
-        final ISender sender = new KafkaSender(kafkaTopic, kafkaBrokers, kafkaClientId);
-//        final ISender sender = new ConsoleSender();
         final Source source = new NginxSource("nginx.hawkeye", genConf);
         final ActorSystem actorSystem = ActorSystem.create("volcano");
 
